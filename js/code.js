@@ -64,8 +64,25 @@ const getFeature = (feature, layer) => {
     layer.bindTooltip(feature.properties.name);
 }
 
+// Function to calculate the hue based on net migration
+function calculateHue(positive, negative) {
+    // Calculate hue as (positive / negative)^3 * 60, limited to a maximum of 120
+    var hue = Math.min((Math.pow(positive / negative, 3) * 60), 120);
+    return hue;
+}
+
 const getStyle = (feature) => {
+
+    const pos_index = posJson.dataset.dimension.Tuloalue.category.index["KU" + feature.properties.kunta];
+    const neg_index = negJson.dataset.dimension.Lähtöalue.category.index["KU" + feature.properties.kunta];
+
+    pos_migration = posJson.dataset.value[pos_index];
+    neg_migration = negJson.dataset.value[neg_index];
+
+    const hue = calculateHue(pos_migration, neg_migration);
+
     return {
+        color: 'hsl(' + hue + ', 75%, 50%)',
         weight: 2,
         fillOpacity: 0.5
     }
